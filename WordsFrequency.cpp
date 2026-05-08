@@ -40,12 +40,10 @@
 #include <thread>
 #include <mutex>
 #include <vector>
-#include <map>
 #include <unordered_map>
 #include <sstream>
 #include <algorithm>
 #include <cctype>
-#include <queue>
 #include <string>
 
 std::mutex outMutex; //for debugging
