@@ -1,0 +1,31 @@
+# Visual Studio
+.vs/
+Debug/
+Release/
+x64/
+x86/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+# Скомпилированные файлы
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Временные файлы
+*.tmp
+v1.txt
+Investigations.txt
