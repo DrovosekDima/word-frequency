@@ -287,7 +287,7 @@ void processBlock(const std::vector<std::string>& words,
                         WordFrequency&            result) 
 {
 
-   spdlog::debug("Thread({:x}) processBlock [{} .. {}]",
+    spdlog::debug("Thread({:x}) processBlock [{} .. {}]",
             std::hash<std::thread::id>{}(std::this_thread::get_id()),
             startIdx, endIdx);
 
