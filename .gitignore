@@ -29,3 +29,9 @@ Thumbs.db
 *.tmp
 v1.txt
 Investigations.txt
+
+# Build directories
+build/
+out/
+cmake-build-debug/
+cmake-build-release/
