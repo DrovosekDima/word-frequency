@@ -121,7 +121,7 @@ word_frequency.exe input.txt output.txt 4
      Используется Public portable C++ Hashing Library (https://github.com/stbrumme/hash-library/blob/master/readme.md)
    - Если хэш заканчивается на символ 0-7, слово добавляется в локальный счётчик
    - Локальная `std::unordered_map<std::string, size_t>` используется для минимизации конкуренции за мьютекс
-   - После обработки локальные результаты мёржатся в глобальную карту под защитой мьютекса
+   - После обработки локальные результаты мёржатся в глобальную unordered_map под защитой мьютекса
 
 4. **Сортировка результатов**
    - Копирование из `unordered_map` в `std::vector<std::pair>`
