@@ -27,7 +27,7 @@
 
 Предположения:
  - Размер файла? Допустим, что помещается в память.
- - Может ли слово содержать: цифры, ', _, -. Предполагаем, что нет.
+ - Может ли слово содержать: цифры, ', _, -. Предполагаем, что да.
  - Слова могут быть в верхнем и нижнем регистре. Слова отличающиеся регистром считаем разными.
  - количество потоков. Предполагаем: мин = 1, макс = 64.
  - SHA-256 - https://create.stephan-brumme.com/hash-library/
@@ -52,13 +52,11 @@
 #include "spdlog/sinks/basic_file_sink.h"
 #include <memory>
 
-std::mutex outMutex;
-
 const size_t MIN_WORDS_PER_THREAD =  2;
 const size_t MAX_NUM_THREADS      = 64; 
 const size_t MIN_NUM_THREADS      =  1;
 const size_t DEF_NUM_THREADS      =  4;
-const char*  LOG_FILE_NAME       = "D:\\TRASH\\Logs\\trace_word_freq.txt";
+const char*  LOG_FILE_NAME       = "\\trace_word_freq.txt";
 
 class Timer {
 private:
@@ -129,14 +127,6 @@ struct ThreadBlock
     size_t endIdx;
 };
 
-
-//std::string toLower(const std::string& word) 
-//{
-//    std::string result = word;
-//    std::transform(result.begin(), result.end(), result.begin(),
-//        [](unsigned char c) { return std::tolower(c); });
-//    return result;
-//}
 
 //SHA-256 hash last char is in range 0 - 7
 bool isValidHash(const std::string& hashStr) 
@@ -228,7 +218,7 @@ std::vector<std::string> readFileToWords(const std::string& filename)
  the next thread block (i.e., block[i].endIdx == block[i+1].startIdx). 
  Finally, it ensures the last block ends at the last word index.
 -------------------------------------------------------------------------------*/
-std::vector<ThreadBlock> splitWordsForThreadsBalanced(size_t totalWords, size_t& numThreads) 
+std::vector<ThreadBlock> splitWordsForThreadsBalanced(size_t totalWords, size_t numThreads) 
 {
     Timer timer("splitWordsForThreadsBalanced");
     std::vector<ThreadBlock> blocks;
@@ -297,11 +287,9 @@ void processBlock(const std::vector<std::string>& words,
                         WordFrequency&            result) 
 {
 
-    {
-        std::lock_guard<std::mutex> guardLock(outMutex);
-        std::cout << "Thread(" << std::this_thread::get_id() << ") Processing block ["
-            << startIdx << ".." << endIdx << "]" << std::endl;
-    }
+   spdlog::debug("Thread({:x}) processBlock [{} .. {}]",
+            std::hash<std::thread::id>{}(std::this_thread::get_id()),
+            startIdx, endIdx);
 
     Timer timer("processBlock[" + std::to_string(startIdx) + ".." + std::to_string(endIdx) + "]");
 
@@ -321,19 +309,14 @@ void processBlock(const std::vector<std::string>& words,
             spdlog::debug("Thread({:x}) Added: '{}' prev: '{}' hash: {}",
                 std::hash<std::thread::id>{}(std::this_thread::get_id()),
                 words[i], words[i - 1], hashValue);
-            //{
 
-            //    std::lock_guard<std::mutex> guardLock(outMutex);
-            //    std::cout << "Thread(" << std::this_thread::get_id() << ")" << "Added:\t'"
-            //        << words[i] << "' prev is '" << words[i - 1] << "'\t hash is " << hashValue << std::endl;
-            //}
             localFreq[words[i]]++;
         }
         else
         {
-            std::lock_guard<std::mutex> guardLock(outMutex);
-            std::cout << "Thread(" << std::this_thread::get_id() << ")" << "Skipped:\t'"
-                << words[i] << "' prev is '" << words[i - 1] << "'\t hash is " << hashValue << std::endl;
+            spdlog::debug("Thread({:x}) Skipped: '{}' prev: '{}' hash: {}",
+                std::hash<std::thread::id>{}(std::this_thread::get_id()),
+                words[i], words[i - 1], hashValue);
         }
     }
 
@@ -452,10 +435,10 @@ int main(int argc, char* argv[])
         for (const auto& block : blocks)
         {
             threads.emplace_back(processBlock,
-                std::ref(words),
-                block.startIdx,
-                block.endIdx,
-                std::ref(wordFreq));
+                                 std::ref(words),
+                                 block.startIdx,
+                                 block.endIdx,
+                                 std::ref(wordFreq));
         }
 
 

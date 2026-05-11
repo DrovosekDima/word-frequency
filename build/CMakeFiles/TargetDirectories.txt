@@ -1,0 +1,3 @@
+D:/HOME/GitHub/C++CodingTests/WordsFrequency/build/CMakeFiles/word_frequency.dir
+D:/HOME/GitHub/C++CodingTests/WordsFrequency/build/CMakeFiles/ALL_BUILD.dir
+D:/HOME/GitHub/C++CodingTests/WordsFrequency/build/CMakeFiles/ZERO_CHECK.dir
